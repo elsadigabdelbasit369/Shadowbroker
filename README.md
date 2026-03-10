@@ -17,7 +17,8 @@ Built with **Next.js**, **MapLibre GL**, **FastAPI**, and **Python**, it's desig
 ## Interesting Use Cases
 
 * Track private jets of billionaires
-* Monitor satellites passing overhead
+* Monitor satellites passing overhead and see high-resolution satellite imagery
+* Nose around local emergency scanners
 * Watch naval traffic worldwide
 * Detect GPS jamming zones
 * Follow earthquakes and disasters in real time
