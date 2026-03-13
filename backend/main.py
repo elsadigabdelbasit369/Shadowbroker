@@ -80,6 +80,13 @@ def _build_cors_origins():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
     import threading
 
     # Start AIS stream first — it loads the disk cache (instant ships) then
