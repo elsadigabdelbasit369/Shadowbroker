@@ -37,6 +37,7 @@ for _var in _SECRET_VARS:
 
 from fastapi import FastAPI, Request, Response, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from services.data_fetcher import start_scheduler, stop_scheduler, get_latest_data, source_timestamps
 from services.ais_stream import start_ais_stream, stop_ais_stream
