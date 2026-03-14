@@ -1,11 +1,15 @@
 {
-  "name": "shadowbroker",
+  "name": "shadowbroker-backend",
   "version": "1.0.0",
-  "type": "module",
-  "dependencies": {
-    "satellite.js": "^4.0.0"
-  },
+  "description": "WebSocket proxy for AIS Stream",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js"
-  }
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
