@@ -1,0 +1,22 @@
+from fastapi import FastAPI
+import os
+import uvicorn
+
+app = FastAPI(title="Shadowbroker API", version="1.0.0")
+
+@app.get("/")
+async def root():
+    return {
+        "message": "Shadowbroker API is running!",
+        "status": "online",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
+# إذا كان هناك مجلد backend، استخدم هذا السطر للتشغيل
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
