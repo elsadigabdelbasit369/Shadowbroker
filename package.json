@@ -1,0 +1,11 @@
+{
+  "name": "shadowbroker",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "satellite.js": "^4.0.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
