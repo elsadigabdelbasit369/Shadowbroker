@@ -43,8 +43,10 @@ RUN echo ">>> Creating non-root user..." && \
     adduser --system --uid 1001 backenduser && \
     chown -R backenduser /app
 
+# Switch to the non-root user
 USER backenduser
 
+# Expose port
 EXPOSE 8000
 
 # Start server
