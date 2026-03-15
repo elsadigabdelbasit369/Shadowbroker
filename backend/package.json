@@ -1,5 +1,7 @@
 {
+  "name": "shadowbroker-backend",
+  "version": "1.0.0",
   "dependencies": {
-    "ws": "^8.19.0"
+    "ws": "^8.14.2"
   }
 }
