@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "🔸 حذف كاش npm/yarn/pnpm..."
+rm -rf node_modules/.cache
+
+echo "🔸 حذف مجلدات البناء (build/dist)..."
+rm -rf build dist
+
+echo "🔸 حذف كاش Metro (React Native) إن وجد..."
+rm -rf .metro-cache
+
+echo "🔸 حذف كاش Storybook إن وجد..."
+rm -rf .storybook_cache
+
+echo "🔸 حذف كاش Vite أو Next.js أو أدوات شبيهة..."
+rm -rf .next .vite .nuxt .svelte-kit
+
+echo "🔸 حذف ملفات الكاش المؤقتة العامة..."
+rm -rf .cache
+
+echo "✅ تم حذف جميع الكاش والملفات المؤقتة!"
