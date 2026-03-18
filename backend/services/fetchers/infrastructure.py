@@ -181,6 +181,44 @@ def fetch_military_bases():
 
 
 # ---------------------------------------------------------------------------
+# Power Plants (WRI Global Power Plant Database)
+# ---------------------------------------------------------------------------
+_POWER_PLANTS_PATH = Path(__file__).parent.parent.parent / "data" / "power_plants.json"
+
+
+def fetch_power_plants():
+    """Load WRI Global Power Plant Database (~35K facilities)."""
+    plants = []
+    try:
+        if not _POWER_PLANTS_PATH.exists():
+            logger.warning(f"Power plants file not found: {_POWER_PLANTS_PATH}")
+            return
+        raw = json.loads(_POWER_PLANTS_PATH.read_text(encoding="utf-8"))
+        for entry in raw:
+            lat = entry.get("lat")
+            lng = entry.get("lng")
+            if lat is None or lng is None:
+                continue
+            if not (-90 <= lat <= 90 and -180 <= lng <= 180):
+                continue
+            plants.append({
+                "name": entry.get("name", "Unknown"),
+                "country": entry.get("country", ""),
+                "fuel_type": entry.get("fuel_type", "Unknown"),
+                "capacity_mw": entry.get("capacity_mw"),
+                "owner": entry.get("owner", ""),
+                "lat": lat, "lng": lng,
+            })
+        logger.info(f"Power plants: {len(plants)} facilities loaded")
+    except Exception as e:
+        logger.error(f"Error loading power plants: {e}")
+    with _data_lock:
+        latest_data["power_plants"] = plants
+    if plants:
+        _mark_fresh("power_plants")
+
+
+# ---------------------------------------------------------------------------
 # CCTV Cameras
 # ---------------------------------------------------------------------------
 def fetch_cctv():

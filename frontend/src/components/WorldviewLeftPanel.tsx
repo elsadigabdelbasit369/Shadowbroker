@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plane, AlertTriangle, Activity, Satellite, Cctv, ChevronDown, ChevronUp, Ship, Eye, Anchor, Settings, Sun, Moon, BookOpen, Radio, Play, Pause, Globe, Flame, Wifi, Server, Shield, ToggleLeft, ToggleRight, Palette } from "lucide-react";
+import { Plane, AlertTriangle, Activity, Satellite, Cctv, ChevronDown, ChevronUp, Ship, Eye, Anchor, Settings, Sun, Moon, BookOpen, Radio, Play, Pause, Globe, Flame, Wifi, Server, Shield, Zap, ToggleLeft, ToggleRight, Palette } from "lucide-react";
 import packageJson from "../../package.json";
 import { useTheme } from "@/lib/ThemeContext";
 
@@ -41,6 +41,7 @@ const FRESHNESS_MAP: Record<string, string> = {
     firms: "firms_fires",
     internet_outages: "internet_outages",
     datacenters: "datacenters",
+    power_plants: "power_plants",
 };
 
 // POTUS fleet ICAO hex codes for client-side filtering
@@ -147,6 +148,7 @@ const WorldviewLeftPanel = React.memo(function WorldviewLeftPanel({ data, active
         { id: "firms", name: "Fire Hotspots (24h)", source: "NASA FIRMS VIIRS", count: data?.firms_fires?.length || 0, icon: Flame },
         { id: "internet_outages", name: "Internet Outages", source: "IODA / Georgia Tech", count: data?.internet_outages?.length || 0, icon: Wifi },
         { id: "datacenters", name: "Data Centers", source: "DC Map (GitHub)", count: data?.datacenters?.length || 0, icon: Server },
+        { id: "power_plants", name: "Power Plants", source: "WRI (Static)", count: data?.power_plants?.length || 0, icon: Zap },
         { id: "military_bases", name: "Military Bases", source: "OSINT (Static)", count: data?.military_bases?.length || 0, icon: Shield },
         { id: "day_night", name: "Day / Night Cycle", source: "Solar Calc", count: null, icon: Sun },
     ];

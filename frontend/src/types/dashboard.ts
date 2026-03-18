@@ -232,6 +232,16 @@ export interface DataCenter {
   lng: number;
 }
 
+export interface PowerPlant {
+  name: string;
+  country: string;
+  fuel_type: string;
+  capacity_mw: number | null;
+  owner: string;
+  lat: number;
+  lng: number;
+}
+
 export interface MilitaryBase {
   name: string;
   country: string;
@@ -422,6 +432,7 @@ export interface DashboardData {
   firms_fires?: FireHotspot[];
   datacenters?: DataCenter[];
   military_bases?: MilitaryBase[];
+  power_plants?: PowerPlant[];
 }
 
 // ─── COMPONENT PROPS ────────────────────────────────────────────────────────
@@ -451,6 +462,7 @@ export interface ActiveLayers {
   internet_outages: boolean;
   datacenters: boolean;
   military_bases: boolean;
+  power_plants: boolean;
 }
 
 export interface SelectedEntity {

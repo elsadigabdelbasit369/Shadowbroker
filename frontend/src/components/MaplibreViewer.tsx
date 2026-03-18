@@ -19,7 +19,7 @@ import {
     svgTanker, svgRecon, svgPlanePink, svgPlaneAlertRed, svgPlaneDarkBlue,
     svgPlaneWhiteAlert, svgHeliPink, svgHeliAlertRed, svgHeliDarkBlue,
     svgHeliBlue, svgHeliLime, svgHeliWhiteAlert, svgPlaneBlack, svgHeliBlack,
-    svgDrone, svgDataCenter, svgRadioTower, svgShipGray, svgShipRed, svgShipYellow,
+    svgDrone, svgDataCenter, svgPowerPlant, svgRadioTower, svgShipGray, svgShipRed, svgShipYellow,
     svgShipBlue, svgShipWhite, svgShipPink, svgCarrier, svgCctv, svgWarning, svgThreat,
     svgTriangleYellow, svgTriangleRed,
     svgFireYellow, svgFireOrange, svgFireRed, svgFireDarkRed,
@@ -50,7 +50,7 @@ import { useClusterLabels } from "@/components/map/hooks/useClusterLabels";
 import { spreadAlertItems } from "@/utils/alertSpread";
 import {
     buildEarthquakesGeoJSON, buildJammingGeoJSON, buildCctvGeoJSON, buildKiwisdrGeoJSON,
-    buildFirmsGeoJSON, buildInternetOutagesGeoJSON, buildDataCentersGeoJSON, buildMilitaryBasesGeoJSON,
+    buildFirmsGeoJSON, buildInternetOutagesGeoJSON, buildDataCentersGeoJSON, buildPowerPlantsGeoJSON, buildMilitaryBasesGeoJSON,
     buildGdeltGeoJSON, buildLiveuaGeoJSON, buildFrontlineGeoJSON,
     buildFlightLayerGeoJSON, buildUavGeoJSON,
     buildSatellitesGeoJSON, buildShipsGeoJSON, buildCarriersGeoJSON,
@@ -222,6 +222,10 @@ const MaplibreViewer = ({ data, activeLayers, onEntityClick, flyToLocation, sele
         activeLayers.datacenters ? buildDataCentersGeoJSON(data?.datacenters) : null,
         [activeLayers.datacenters, data?.datacenters]);
 
+    const powerPlantsGeoJSON = useMemo(() =>
+        activeLayers.power_plants ? buildPowerPlantsGeoJSON(data?.power_plants) : null,
+        [activeLayers.power_plants, data?.power_plants]);
+
     const militaryBasesGeoJSON = useMemo(() =>
         activeLayers.military_bases ? buildMilitaryBasesGeoJSON(data?.military_bases) : null,
         [activeLayers.military_bases, data?.military_bases]);
@@ -353,6 +357,8 @@ const MaplibreViewer = ({ data, activeLayers, onEntityClick, flyToLocation, sele
             loadImg('fire-cluster-xl', svgFireClusterXL);
             // Data center icon
             loadImg('datacenter', svgDataCenter);
+            // Power plant icon
+            loadImg('power-plant', svgPowerPlant);
             // Satellite mission-type icons
             loadImg('sat-mil', makeSatSvg('#ff3333'));
             loadImg('sat-sar', makeSatSvg('#00e5ff'));
@@ -592,6 +598,7 @@ const MaplibreViewer = ({ data, activeLayers, onEntityClick, flyToLocation, sele
         kiwisdrGeoJSON && 'kiwisdr-layer',
         internetOutagesGeoJSON && 'internet-outages-layer',
         dataCentersGeoJSON && 'datacenters-layer',
+        powerPlantsGeoJSON && 'power-plants-layer',
         militaryBasesGeoJSON && 'military-bases-layer',
         firmsGeoJSON && 'firms-viirs-layer'
     ].filter(Boolean) as string[];
@@ -1468,6 +1475,61 @@ const MaplibreViewer = ({ data, activeLayers, onEntityClick, flyToLocation, sele
                     </Source>
                 )}
 
+                {/* Power Plant positions */}
+                {powerPlantsGeoJSON && (
+                    <Source id="power-plants" type="geojson" data={powerPlantsGeoJSON as any} cluster={true} clusterRadius={30} clusterMaxZoom={8}>
+                        {/* Cluster circles */}
+                        <Layer
+                            id="power-plants-clusters"
+                            type="circle"
+                            filter={['has', 'point_count']}
+                            paint={{
+                                'circle-color': '#92400e',
+                                'circle-radius': ['step', ['get', 'point_count'], 12, 10, 16, 50, 20],
+                                'circle-opacity': 0.7,
+                                'circle-stroke-width': 1,
+                                'circle-stroke-color': '#f59e0b',
+                            }}
+                        />
+                        <Layer
+                            id="power-plants-cluster-count"
+                            type="symbol"
+                            filter={['has', 'point_count']}
+                            layout={{
+                                'text-field': '{point_count_abbreviated}',
+                                'text-font': ['Noto Sans Bold'],
+                                'text-size': 10,
+                                'text-allow-overlap': true,
+                            }}
+                            paint={{
+                                'text-color': '#fde68a',
+                            }}
+                        />
+                        {/* Individual power plant icons */}
+                        <Layer
+                            id="power-plants-layer"
+                            type="symbol"
+                            filter={['!', ['has', 'point_count']]}
+                            layout={{
+                                'icon-image': 'power-plant',
+                                'icon-size': ['interpolate', ['linear'], ['zoom'], 2, 0.5, 6, 0.7, 10, 1.0],
+                                'icon-allow-overlap': true,
+                                'text-field': ['step', ['zoom'], '', 6, ['get', 'name']],
+                                'text-font': ['Noto Sans Regular'],
+                                'text-size': 9,
+                                'text-offset': [0, 1.2],
+                                'text-anchor': 'top',
+                                'text-allow-overlap': false,
+                            }}
+                            paint={{
+                                'text-color': '#fbbf24',
+                                'text-halo-color': 'rgba(0,0,0,0.9)',
+                                'text-halo-width': 1,
+                            }}
+                        />
+                    </Source>
+                )}
+
                 {/* Military Base positions */}
                 {militaryBasesGeoJSON && (
                     <Source id="military-bases" type="geojson" data={militaryBasesGeoJSON as any}>
@@ -1879,6 +1941,52 @@ const MaplibreViewer = ({ data, activeLayers, onEntityClick, flyToLocation, sele
                                 )}
                                 <div className="mt-1.5 text-[9px] text-violet-600 tracking-wider">
                                     DATA CENTER
+                                </div>
+                            </div>
+                        </Popup>
+                    );
+                })()}
+
+                {/* Power Plant click popup */}
+                {selectedEntity?.type === 'power_plant' && (() => {
+                    const pp = data?.power_plants?.find((_: any, i: number) => `pp-${i}` === selectedEntity.id);
+                    if (!pp) return null;
+                    return (
+                        <Popup
+                            longitude={pp.lng}
+                            latitude={pp.lat}
+                            closeButton={false}
+                            closeOnClick={false}
+                            onClose={() => onEntityClick?.(null)}
+                            className="threat-popup"
+                            maxWidth="280px"
+                        >
+                            <div className="map-popup bg-[#1a0f00] border border-amber-400/40 text-[#fde68a] min-w-[200px]">
+                                <div className="map-popup-title text-amber-400 border-b border-amber-400/20 pb-1">
+                                    {pp.name}
+                                </div>
+                                {pp.fuel_type && (
+                                    <div className="map-popup-row">
+                                        Fuel: <span className="text-[#fbbf24]">{pp.fuel_type}</span>
+                                    </div>
+                                )}
+                                {pp.capacity_mw != null && (
+                                    <div className="map-popup-row">
+                                        Capacity: <span className="text-white">{pp.capacity_mw.toLocaleString()} MW</span>
+                                    </div>
+                                )}
+                                {pp.owner && (
+                                    <div className="map-popup-row">
+                                        Operator: <span className="text-white">{pp.owner}</span>
+                                    </div>
+                                )}
+                                {pp.country && (
+                                    <div className="map-popup-row">
+                                        Country: <span className="text-white">{pp.country}</span>
+                                    </div>
+                                )}
+                                <div className="mt-1.5 text-[9px] text-amber-600 tracking-wider">
+                                    POWER PLANT
                                 </div>
                             </div>
                         </Popup>
